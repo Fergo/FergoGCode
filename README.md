@@ -1,6 +1,6 @@
-# FergoGCode
+# Fergo GCode
 
-FergoGCode is a simple utility to convert DXF (up to version 2010) or Gerber files into GCode.
+Fergo GCode is a simple utility to convert DXF (up to version 2010) or Gerber files into GCode.
 
 ### Objective
 
