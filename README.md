@@ -34,6 +34,7 @@ For my modded printer, the PWM signals that sets the laser/spindle power comes f
 ### Dependencies
 
 **GerberTools Library** - https://github.com/ThisIsNotRocketScience/GerberTools
+
 **Fergo SimpleDXF** - https://github.com/Fergo/simple-dxf
 
 ### Download
