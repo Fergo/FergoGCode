@@ -16,50 +16,60 @@ namespace FergoGCode {
 		private List<Shape> shapes = null;
 
 		private bool Process(bool Save) {
-			if (shapes != null) {
-				//Gets the parameters from the form
-				GCodeSettings settings = ReadSettings();
 
-				if (settings != null) {
-					//Create the GCode string
-					string gCode = GenerateGCode(shapes, settings);
-
-					if (gCode.Length != 0) {
-						if (Save) {
-							try {
-								File.WriteAllText(txtOutput.Text, gCode);
-								MessageBox.Show("G-Code successfully generated", "File saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
-							} catch {
-								MessageBox.Show("Failed to save the file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-							}
-						} else {
-							frmPreview formPreview = new frmPreview();
-							formPreview.txtGCode.Text = gCode;
-
-							formPreview.ShowDialog();
-						}
-					} else {
-						MessageBox.Show("Could not generate the G-Code", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-						return false;
-					}
-				} else {
-					MessageBox.Show("Invalid settings configuration", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
-			} else {
+			//Check if there is any loaded geometry at all
+			if (shapes == null) { 
 				MessageBox.Show("No geometry found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
-			return true;
+			//Gets the parameters from the form and check if they are valid
+			GCodeSettings settings = ReadSettings();
+
+			if (settings == null) {
+				MessageBox.Show("Invalid settings configuration", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			//Create the GCode string
+			string gCode = GenerateGCode(shapes, settings);
+
+			//If the return string is empty, something went wrong...
+			if (gCode.Length == 0) {
+				MessageBox.Show("Could not generate the G-Code", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			//If opted to save, dump the contents to the file. Otherwise, show the preview form
+			if (Save) {
+				try {
+					File.WriteAllText(txtOutput.Text, gCode);
+					MessageBox.Show("G-Code successfully generated", "File saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+					return true;
+				} catch {
+					MessageBox.Show("Failed to save the file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+					return false;
+				}
+			} else {
+				frmPreview formPreview = new frmPreview();
+				formPreview.txtGCode.Text = gCode;
+
+				formPreview.ShowDialog();
+
+				return true;
+			}
 		}
 
 		private List<Shape> LoadDXF(string Path, int SplinePrecision, int CirclePrecision) {
 			List<Shape> retShape = new List<Shape>();
 
+			//Opens the DXF file and load all the data into DXF shapes
 			Document dxfFile = new Document(Path);
 			dxfFile.Read();
 
+			//Parse each line
 			foreach (SimpleDXF.Line line in dxfFile.Lines) {
 				Shape tempShape = new Shape();
 
@@ -70,6 +80,7 @@ namespace FergoGCode {
 				retShape.Add(tempShape);
 			}
 
+			//Parse each polyline
 			foreach (Polyline pl in dxfFile.Polylines) {
 				Shape tempShape = new Shape();
 
@@ -86,6 +97,7 @@ namespace FergoGCode {
 				retShape.Add(tempShape);
 			}
 
+			//Parse each circle
 			foreach (Circle circle in dxfFile.Circles) {
 				Shape tempShape = new Shape();
 
@@ -100,6 +112,7 @@ namespace FergoGCode {
 				retShape.Add(tempShape);
 			}
 
+			//Parse each arc
 			foreach (Arc arc in dxfFile.Arcs) {
 				Shape tempShape = new Shape();
 
@@ -580,120 +593,6 @@ namespace FergoGCode {
 		}
 	}
 
-	public enum GCodeType {
-		SINGLE_PASS,
-		MULTIPLE_PASS
-	}
-
-	public class Shape {
-		public List<Vector2d> Vertices;
-
-		public Shape() {
-			this.Vertices = new List<Vector2d>();
-		}
-
-		public Shape(List<Vector2d> Vertices) {
-			this.Vertices = Vertices;
-		}
-	}
-
-	public class Vector2d {
-		public double X;
-		public double Y;
-
-		public Vector2d(double X, double Y) {
-			this.X = X;
-			this.Y = Y;
-		}
-	}
-
-	public class GCodeSettings {
-		public string gcLaserOn;
-		public string gcLaserOff;
-
-		public string gcSpindleOn;
-		public string gcSpindleOff;
-
-		public string gcUnit;
-		public string gcPositioning;
-
-		public string gcHeader;
-		public string gcFooter;
-
-		public double gcZTravelHeight;
-		public double gcZChange;
-		public int gcPass;
-		public bool gcRapidRaise;
-
-		public int gcMoveFeed;
-		public int gcLinearFeed;
-
-		public string gcMoveFeedCmd;
-		public string gcLinearFeedCmd;
-
-		public GCodeType gcType;
-		public string gcPrecisionFormat;
-		public bool gcComments;
-		public bool gcReturnOrigin;
-		public bool gcIsSpindle;
-	}
-
-	public static class WriteDXF {
-		public static bool CreateDXF(string Path, List<Shape> Polygons, int Color) {
-			try {
-				StreamWriter sw = new StreamWriter(Path);
-
-				sw.WriteLine("0");
-				sw.WriteLine("SECTION");
-				sw.WriteLine("2");
-				sw.WriteLine("ENTITIES");
-
-				foreach (Shape shape in Polygons) {
-					sw.WriteLine("0");
-					sw.WriteLine("POLYLINE");
-					sw.WriteLine("8");          //LAYER
-					sw.WriteLine("0");          //Layer Name
-					sw.WriteLine("66");         //ENTITIES FOLLOW
-					sw.WriteLine("1");          //Yes
-					sw.WriteLine("62");         //COLOR
-					sw.WriteLine(Color);        //Color code
-					sw.WriteLine("10");         //X
-					sw.WriteLine("0.0");        //X Coord
-					sw.WriteLine("20");         //Y
-					sw.WriteLine("0.0");        //Y Coord
-					sw.WriteLine("30");         //Z
-					sw.WriteLine("0.0");        //Z Coord
-
-					foreach (Vector2d points in shape.Vertices) {
-						sw.WriteLine("0");
-						sw.WriteLine("VERTEX");
-						sw.WriteLine("8");
-						sw.WriteLine("0");
-
-						sw.WriteLine("10");
-						sw.WriteLine(points.X.ToString(NumberFormatInfo.InvariantInfo));
-						sw.WriteLine("20");
-						sw.WriteLine(points.Y.ToString(NumberFormatInfo.InvariantInfo));
-						sw.WriteLine("30");
-						sw.WriteLine("0.0");
-					}
-
-					sw.WriteLine("0");
-					sw.WriteLine("SEQEND");
-				}
-
-				sw.WriteLine("0");
-				sw.WriteLine("ENDSEC");
-				sw.WriteLine("0");
-				sw.WriteLine("EOF");
-				sw.WriteLine("");
-
-				sw.Close();
-
-				return true;
-			} catch {
-				return false;
-			}
-		}
-	}
+	
+	
 }
