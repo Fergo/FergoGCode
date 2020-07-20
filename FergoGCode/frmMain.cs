@@ -54,7 +54,7 @@ namespace FergoGCode {
 			return true;
 		}
 
-		private List<Shape> LoadDXF(string Path, int Precision) {
+		private List<Shape> LoadDXF(string Path, int SplinePrecision, int CirclePrecision) {
 			List<Shape> retShape = new List<Shape>();
 
 			Document dxfFile = new Document(Path);
@@ -73,7 +73,7 @@ namespace FergoGCode {
 			foreach (Polyline pl in dxfFile.Polylines) {
 				Shape tempShape = new Shape();
 
-				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetPolyVertexes(pl, Precision);
+				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetPolyVertexes(pl, SplinePrecision);
 
 				//Add all vertices of the shape
 				foreach (SimpleDXF.Vector2d point in vertices)
@@ -89,7 +89,7 @@ namespace FergoGCode {
 			foreach (Circle circle in dxfFile.Circles) {
 				Shape tempShape = new Shape();
 
-				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetCircleVertexes(circle, Precision);
+				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetCircleVertexes(circle, CirclePrecision);
 
 				foreach (SimpleDXF.Vector2d point in vertices)
 					tempShape.Vertices.Add(new Vector2d(point.X, point.Y));
@@ -103,7 +103,7 @@ namespace FergoGCode {
 			foreach (Arc arc in dxfFile.Arcs) {
 				Shape tempShape = new Shape();
 
-				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetArcVertexes(arc, Precision);
+				List<SimpleDXF.Vector2d> vertices = VertexConverter.GetArcVertexes(arc, SplinePrecision);
 
 				foreach (SimpleDXF.Vector2d point in vertices)
 					tempShape.Vertices.Add(new Vector2d(point.X, point.Y));
@@ -192,7 +192,8 @@ namespace FergoGCode {
 			sw.WriteLine(rdoSpindle.Checked);
 			sw.WriteLine(txtFastFeedCmd.Text);
 			sw.WriteLine(txtLinearFeedCmd.Text);
-			sw.WriteLine(nudPrecision.Value);
+			sw.WriteLine(nudSplinePrecision.Value);
+			sw.WriteLine(nudCirclePrecision.Value);
 
 			sw.Close();
 		}
@@ -229,7 +230,8 @@ namespace FergoGCode {
 					rdoLaser.Checked = !rdoSpindle.Checked;
 					txtFastFeedCmd.Text = sr.ReadLine();
 					txtLinearFeedCmd.Text = sr.ReadLine();
-					nudPrecision.Value = Convert.ToDecimal(sr.ReadLine());
+					nudSplinePrecision.Value = Convert.ToDecimal(sr.ReadLine());
+					nudCirclePrecision.Value = Convert.ToDecimal(sr.ReadLine());
 
 					error = false;
 				} catch {
@@ -496,7 +498,7 @@ namespace FergoGCode {
 
 		private void OpenFile(string Filename) {
 			if (Path.GetExtension(Filename).ToUpper() == ".DXF") {
-				shapes = LoadDXF(Filename, (int)nudPrecision.Value);
+				shapes = LoadDXF(Filename, (int)nudSplinePrecision.Value, (int)nudCirclePrecision.Value);
 			} else if (gerberExtensions.Contains(Path.GetExtension(Filename).ToUpper())) {
 				shapes = LoadGerber(Filename);
 			} else {
@@ -545,7 +547,7 @@ namespace FergoGCode {
 
 			if (ofd.ShowDialog() == DialogResult.OK) {
 				if (File.Exists(ofd.FileName)) {
-					OpenFile(txtInput.Text);
+					OpenFile(ofd.FileName);
 					txtInput.Text = ofd.FileName;
 				} else {
 					MessageBox.Show("File not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

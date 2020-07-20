@@ -68,7 +68,7 @@
 			this.txtSpindleOff = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
-			this.nudPrecision = new System.Windows.Forms.NumericUpDown();
+			this.nudSplinePrecision = new System.Windows.Forms.NumericUpDown();
 			this.label16 = new System.Windows.Forms.Label();
 			this.cmbInput = new System.Windows.Forms.Button();
 			this.txtInput = new System.Windows.Forms.TextBox();
@@ -85,6 +85,8 @@
 			this.sfd = new System.Windows.Forms.SaveFileDialog();
 			this.cmbPreview = new System.Windows.Forms.Button();
 			this.cmbSaveDXF = new System.Windows.Forms.Button();
+			this.nudCirclePrecision = new System.Windows.Forms.NumericUpDown();
+			this.label17 = new System.Windows.Forms.Label();
 			this.grpGeneral.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.panel1.SuspendLayout();
@@ -95,8 +97,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudTravelHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picTemplate)).BeginInit();
 			this.groupBox4.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.nudPrecision)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudSplinePrecision)).BeginInit();
 			this.grpOutput.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.nudCirclePrecision)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// cmbProcess
@@ -566,7 +569,9 @@
 			// 
 			// groupBox4
 			// 
-			this.groupBox4.Controls.Add(this.nudPrecision);
+			this.groupBox4.Controls.Add(this.nudCirclePrecision);
+			this.groupBox4.Controls.Add(this.label17);
+			this.groupBox4.Controls.Add(this.nudSplinePrecision);
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.cmbInput);
 			this.groupBox4.Controls.Add(this.txtInput);
@@ -577,23 +582,23 @@
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Input file (Gerber or DXF)";
 			// 
-			// nudPrecision
+			// nudSplinePrecision
 			// 
-			this.nudPrecision.Location = new System.Drawing.Point(107, 51);
-			this.nudPrecision.Maximum = new decimal(new int[] {
+			this.nudSplinePrecision.Location = new System.Drawing.Point(146, 52);
+			this.nudSplinePrecision.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
-			this.nudPrecision.Minimum = new decimal(new int[] {
+			this.nudSplinePrecision.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-			this.nudPrecision.Name = "nudPrecision";
-			this.nudPrecision.Size = new System.Drawing.Size(50, 20);
-			this.nudPrecision.TabIndex = 25;
-			this.nudPrecision.Value = new decimal(new int[] {
+			this.nudSplinePrecision.Name = "nudSplinePrecision";
+			this.nudSplinePrecision.Size = new System.Drawing.Size(50, 20);
+			this.nudSplinePrecision.TabIndex = 25;
+			this.nudSplinePrecision.Value = new decimal(new int[] {
             10,
             0,
             0,
@@ -604,9 +609,9 @@
 			this.label16.AutoSize = true;
 			this.label16.Location = new System.Drawing.Point(17, 54);
 			this.label16.Name = "label16";
-			this.label16.Size = new System.Drawing.Size(84, 13);
+			this.label16.Size = new System.Drawing.Size(123, 13);
 			this.label16.TabIndex = 24;
-			this.label16.Text = "Spline precision:";
+			this.label16.Text = "Spline and arc precision:";
 			// 
 			// cmbInput
 			// 
@@ -764,6 +769,37 @@
 			this.cmbSaveDXF.UseVisualStyleBackColor = true;
 			this.cmbSaveDXF.Click += new System.EventHandler(this.cmbSaveDXF_Click);
 			// 
+			// nudCirclePrecision
+			// 
+			this.nudCirclePrecision.Location = new System.Drawing.Point(299, 52);
+			this.nudCirclePrecision.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			this.nudCirclePrecision.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudCirclePrecision.Name = "nudCirclePrecision";
+			this.nudCirclePrecision.Size = new System.Drawing.Size(50, 20);
+			this.nudCirclePrecision.TabIndex = 27;
+			this.nudCirclePrecision.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+			// 
+			// label17
+			// 
+			this.label17.AutoSize = true;
+			this.label17.Location = new System.Drawing.Point(212, 54);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(81, 13);
+			this.label17.TabIndex = 26;
+			this.label17.Text = "Circle precision:";
+			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -800,9 +836,10 @@
 			((System.ComponentModel.ISupportInitialize)(this.picTemplate)).EndInit();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.nudPrecision)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudSplinePrecision)).EndInit();
 			this.grpOutput.ResumeLayout(false);
 			this.grpOutput.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.nudCirclePrecision)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -868,8 +905,10 @@
 		private System.Windows.Forms.Button cmbSaveDXF;
 		private System.Windows.Forms.TextBox txtLinearFeedCmd;
 		private System.Windows.Forms.TextBox txtFastFeedCmd;
-		private System.Windows.Forms.NumericUpDown nudPrecision;
+		private System.Windows.Forms.NumericUpDown nudSplinePrecision;
 		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.NumericUpDown nudCirclePrecision;
+		private System.Windows.Forms.Label label17;
 	}
 }
 
