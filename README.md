@@ -6,7 +6,7 @@ Fergo GCode is a simple utility to convert DXF (up to version 2010) or Gerber fi
 
 I decided to create this tool with some specific goals in mind:
 
-- Cut materials with my CNC laser (which is actually my a 3D printer with a laser attached to it).
+- Cut materials with my CNC laser (which is actually my 3D printer with a laser attached to it).
 - PCB milling, drilling and etching using Gerber files.
 - Laser etching in general
 
